@@ -57,19 +57,19 @@ type ParcelRequestContainer struct {
 }
 
 type ParcelRequest struct {
-	Name         string      `json:"name"`
-	CompanyName  string      `json:"company_name"`
-	Address      string      `json:"address"`
-	HouseNumber  string      `json:"house_number"`
-	City         string      `json:"city"`
-	PostalCode   string      `json:"postal_code"`
-	Telephone    string      `json:"telephone"`
-	RequestLabel bool        `json:"request_label"`
-	Email        string      `json:"email"`
-	Data         interface{} `json:"data"`
-	Country      string      `json:"country"`
-	ExternalID   *string     `json:"external_reference,omitempty"`
-	SenderID     *int64      `json:"sender_address,omitempty"`
+	Name         string  `json:"name"`
+	CompanyName  string  `json:"company_name"`
+	Address      string  `json:"address"`
+	HouseNumber  string  `json:"house_number"`
+	City         string  `json:"city"`
+	PostalCode   string  `json:"postal_code"`
+	Telephone    string  `json:"telephone"`
+	RequestLabel bool    `json:"request_label"`
+	Email        string  `json:"email"`
+	Country      string  `json:"country"`
+	OrderNumber  string  `json:"order_number"`
+	ExternalID   *string `json:"external_reference,omitempty"`
+	SenderID     *int64  `json:"sender_address,omitempty"`
 	Shipment     struct {
 		ID int64 `json:"id"`
 	} `json:"shipment"`
@@ -161,7 +161,6 @@ func (p *ParcelParams) GetPayload() interface{} {
 		Telephone:    p.PhoneNumber,
 		RequestLabel: p.IsLabelRequested,
 		Email:        p.EmailAddress,
-		Data:         []string{},
 		Country:      p.CountryCode,
 		Shipment: struct {
 			ID int64 `json:"id"`
@@ -175,7 +174,9 @@ func (p *ParcelParams) GetPayload() interface{} {
 	if p.ExternalID != "" {
 		parcel.ExternalID = &p.ExternalID
 	}
-
+	if p.OrderNumber != "" {
+		parcel.OrderNumber = p.OrderNumber
+	}
 	ar := ParcelRequestContainer{Parcel: parcel}
 	return ar
 }
