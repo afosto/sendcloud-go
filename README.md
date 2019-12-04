@@ -4,7 +4,7 @@ An API-client for Sendcloud written in Golang.
 
 ## Overview [![GoDoc](https://godoc.org/github.com/afosto/sendcloud-go?status.svg)](https://godoc.org/github.com/afosto/sendcloud-go)
 
-This package is under heavy development, but currently supports 
+This package currently supports:
 - parcels
 - labels
 - methods
