@@ -16,9 +16,10 @@ func New(apiKey string, apiSecret string) *Client {
 	}
 }
 
+//Get all sender addresses
 func (c *Client) GetAddresses() ([]*sendcloud.Sender, error) {
 	address := sendcloud.SenderResponseContainer{}
-	_, err := sendcloud.Request("GET", "/api/v2/user/addresses/sender", nil, c.apiKey, c.apiSecret, &address)
+	err := sendcloud.Request("GET", "/api/v2/user/addresses/sender", nil, c.apiKey, c.apiSecret, &address)
 	if err != nil {
 		return nil, err
 	}

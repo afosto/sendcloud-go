@@ -14,6 +14,7 @@ type API struct {
 	Integration *integration.Client
 }
 
+//Initialize the client
 func (a *API) Init(apiKey string, apiSecret string) {
 	a.Parcel = parcel.New(apiKey, apiSecret)
 	a.Method = method.New(apiKey, apiSecret)

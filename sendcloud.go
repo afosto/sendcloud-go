@@ -1,16 +1,12 @@
-//Sendcloud-GO aims to make interaction with Sendcloud's API's easier.
-//
-//Currenty supported are integrations, methods, parcels and sender addresses.
-//This package is under heavy development and currently depends on github.com/dghubble/sling which is a dependency we would like to remove in the near future.
 package sendcloud
 
 import (
-	"errors"
-	"github.com/dghubble/sling"
-)
-
-const (
-	ApiURL string = "https://panel.sendcloud.sc"
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"time"
 )
 
 type Payload interface {
@@ -19,6 +15,7 @@ type Payload interface {
 
 type Response interface {
 	GetResponse() interface{}
+	SetResponse(body []byte) error
 }
 
 type ErrorResponse struct {
@@ -29,30 +26,81 @@ type ErrorResponse struct {
 	} `json:"error"`
 }
 
-//Send a request to Sendcloud's API with given method, path, payload and credentials
-func Request(method string, path string, payload Payload, apiKey string, apiSecret string, r Response) (*ErrorResponse, error) {
-	req := sling.New().Base(ApiURL)
-	switch method {
-	case "POST":
-		req = req.Post(path)
-	case "PUT":
-		req = req.Put(path)
-	case "GET":
-		req = req.Get(path)
+type Error struct {
+	Code    int    `json:"code"`
+	Request string `json:"request"`
+	Message string `json:"message"`
+}
+
+func (e *Error) Error() string {
+	return e.Message
+}
+
+//Send a request to Sendcloud with given method, path, payload and credentials
+func Request(method string, uri string, payload Payload, apiKey string, apiSecret string, r Response) error {
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	var request *http.Request
+	var err error
+
+	if payload == nil {
+		request, err = http.NewRequest(method, getUrl(uri), nil)
+		if err != nil {
+			return err
+		}
+	} else {
+		body, err := json.Marshal(payload.GetPayload())
+		if err != nil {
+			return err
+		}
+		request, err = http.NewRequest(method, getUrl(uri), bytes.NewBuffer(body))
+		if err != nil {
+			return err
+		}
 	}
 
 	if payload != nil {
-		req = req.BodyJSON(payload.GetPayload())
+		request.Header.Set("Content-Type", "application/json")
+	}
+	request.Header.Set("User-Agent", "Sendcloud-Go/0.1 ("+apiKey+")")
+	request.SetBasicAuth(apiKey, apiSecret)
+
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
 	}
 
-	errM := &ErrorResponse{}
-	req = req.SetBasicAuth(apiKey, apiSecret)
-	resp, err := req.Receive(r, errM)
-	if err != nil {
-		return errM, err
+	if response.StatusCode > 299 || response.StatusCode < 200 {
+		//Return error response
+		errResponse := ErrorResponse{}
+		err = json.Unmarshal(body, &errResponse)
+		if err != nil {
+			return err
+		}
+		return &Error{
+			Code:    response.StatusCode,
+			Request: errResponse.Error.Request,
+			Message: errResponse.Error.Message,
+		}
 	}
-	if resp.StatusCode > 299 || resp.StatusCode < 200 {
-		return errM, errors.New("got " + resp.Status)
+	err = r.SetResponse(body)
+	return err
+}
+
+//Return the full URL
+func getUrl(uri string) string {
+	var url string
+	if strings.HasPrefix(uri, "https://") {
+		url = uri
+	} else {
+		url = "https://panel.sendcloud.sc/" + uri
 	}
-	return nil, nil
+
+	return url
 }

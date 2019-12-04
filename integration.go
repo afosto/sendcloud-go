@@ -1,6 +1,7 @@
 package sendcloud
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -60,6 +61,7 @@ func (i *IntegrationParams) GetPayload() interface{} {
 	}
 }
 
+//Get formatted response
 func (i *IntegrationListResponseContainer) GetResponse() interface{} {
 	var integrations []*Integration
 	for _, r := range *i {
@@ -78,9 +80,9 @@ func (i *IntegrationListResponseContainer) GetResponse() interface{} {
 	}
 
 	return integrations
-
 }
 
+//Get formatted response
 func (r *IntegrationResponseContainer) GetResponse() interface{} {
 	integration := &Integration{
 		ID:                    r.ID,
@@ -95,5 +97,22 @@ func (r *IntegrationResponseContainer) GetResponse() interface{} {
 	}
 
 	return integration
+}
 
+//Set the response
+func (r *IntegrationResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Set the response
+func (i *IntegrationListResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &i)
+	if err != nil {
+		return err
+	}
+	return nil
 }

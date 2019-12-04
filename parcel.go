@@ -1,9 +1,12 @@
 package sendcloud
 
 import (
+	"encoding/json"
 	"strconv"
 	"time"
 )
+
+type LabelData []byte
 
 type ParcelParams struct {
 	Name             string
@@ -47,73 +50,6 @@ type Parcel struct {
 	CarrierCode    string      `json:"carrier"`
 	Data           interface{} `json:"data"`
 	CreatedAt      time.Time   `json:"created_at"`
-}
-
-//Translate the params into an actual request body
-func (p *ParcelParams) GetPayload() interface{} {
-	parcel := ParcelRequest{
-		Name:         p.Name,
-		CompanyName:  p.CompanyName,
-		Address:      p.Street,
-		HouseNumber:  p.HouseNumber,
-		City:         p.City,
-		PostalCode:   p.PostalCode,
-		Telephone:    p.PhoneNumber,
-		RequestLabel: p.IsLabelRequested,
-		Email:        p.EmailAddress,
-		Data:         []string{},
-		Country:      p.CountryCode,
-		Shipment: struct {
-			ID int64 `json:"id"`
-		}{
-			ID: p.Method,
-		},
-	}
-	if p.SenderID != 0 {
-		parcel.SenderID = &p.SenderID
-	}
-	if p.ExternalID != "" {
-		parcel.ExternalID = &p.ExternalID
-	}
-
-	ar := ParcelRequestContainer{Parcel: parcel}
-	return ar
-}
-
-//Handle the response and return it as a Parcel{}
-func (p *ParcelResponseContainer) GetResponse() interface{} {
-	parcel := Parcel{
-		ID:             p.Parcel.ID,
-		ExternalID:     p.Parcel.ExternalReference,
-		Name:           p.Parcel.Name,
-		CompanyName:    p.Parcel.CompanyName,
-		Email:          p.Parcel.Email,
-		Street:         p.Parcel.AddressDivided.Street,
-		HouseNumber:    p.Parcel.AddressDivided.HouseNumber,
-		Address:        p.Parcel.Address,
-		Address2:       p.Parcel.Address2,
-		City:           p.Parcel.City,
-		Method:         p.Parcel.Shipment.ID,
-		PostalCode:     p.Parcel.PostalCode,
-		CountryCode:    p.Parcel.Country.Iso2,
-		PhoneNumber:    p.Parcel.Telephone,
-		TrackingNumber: p.Parcel.TrackingNumber,
-		Label:          p.Parcel.Label.LabelPrinter,
-		OrderNumber:    p.Parcel.OrderNumber,
-		IsReturn:       p.Parcel.IsReturn,
-		Note:           p.Parcel.Note,
-		CarrierCode:    p.Parcel.Carrier.Code,
-		Data:           p.Parcel.Data,
-	}
-
-	layout := "02-01-2006 15:04:05"
-	createdAt, _ := time.Parse(layout, p.Parcel.DateCreated)
-	parcel.CreatedAt = createdAt
-
-	weightFloat, _ := strconv.ParseFloat(p.Parcel.Weight, 64)
-	weight := int64(weightFloat * 1000)
-	parcel.Weight = weight
-	return &parcel
 }
 
 type ParcelRequestContainer struct {
@@ -211,4 +147,91 @@ type Shipment struct {
 type Status struct {
 	ID      int    `json:"id"`
 	Message string `json:"message"`
+}
+
+//Translate the params into an actual request body
+func (p *ParcelParams) GetPayload() interface{} {
+	parcel := ParcelRequest{
+		Name:         p.Name,
+		CompanyName:  p.CompanyName,
+		Address:      p.Street,
+		HouseNumber:  p.HouseNumber,
+		City:         p.City,
+		PostalCode:   p.PostalCode,
+		Telephone:    p.PhoneNumber,
+		RequestLabel: p.IsLabelRequested,
+		Email:        p.EmailAddress,
+		Data:         []string{},
+		Country:      p.CountryCode,
+		Shipment: struct {
+			ID int64 `json:"id"`
+		}{
+			ID: p.Method,
+		},
+	}
+	if p.SenderID != 0 {
+		parcel.SenderID = &p.SenderID
+	}
+	if p.ExternalID != "" {
+		parcel.ExternalID = &p.ExternalID
+	}
+
+	ar := ParcelRequestContainer{Parcel: parcel}
+	return ar
+}
+
+//Handle the response and return it as a Parcel{}
+func (p *ParcelResponseContainer) GetResponse() interface{} {
+	parcel := Parcel{
+		ID:             p.Parcel.ID,
+		ExternalID:     p.Parcel.ExternalReference,
+		Name:           p.Parcel.Name,
+		CompanyName:    p.Parcel.CompanyName,
+		Email:          p.Parcel.Email,
+		Street:         p.Parcel.AddressDivided.Street,
+		HouseNumber:    p.Parcel.AddressDivided.HouseNumber,
+		Address:        p.Parcel.Address,
+		Address2:       p.Parcel.Address2,
+		City:           p.Parcel.City,
+		Method:         p.Parcel.Shipment.ID,
+		PostalCode:     p.Parcel.PostalCode,
+		CountryCode:    p.Parcel.Country.Iso2,
+		PhoneNumber:    p.Parcel.Telephone,
+		TrackingNumber: p.Parcel.TrackingNumber,
+		Label:          p.Parcel.Label.LabelPrinter,
+		OrderNumber:    p.Parcel.OrderNumber,
+		IsReturn:       p.Parcel.IsReturn,
+		Note:           p.Parcel.Note,
+		CarrierCode:    p.Parcel.Carrier.Code,
+		Data:           p.Parcel.Data,
+	}
+
+	layout := "02-01-2006 15:04:05"
+	createdAt, _ := time.Parse(layout, p.Parcel.DateCreated)
+	parcel.CreatedAt = createdAt
+
+	weightFloat, _ := strconv.ParseFloat(p.Parcel.Weight, 64)
+	weight := int64(weightFloat * 1000)
+	parcel.Weight = weight
+	return &parcel
+}
+
+//Set the response
+func (p *ParcelResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &p)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Get formatted response
+func (l LabelData) GetResponse() interface{} {
+	return l
+}
+
+//Set the response
+func (l *LabelData) SetResponse(body []byte) error {
+	*l = body
+	return nil
 }

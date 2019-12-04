@@ -1,6 +1,9 @@
 package sendcloud
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 type Method struct {
 	ID          int64
@@ -39,6 +42,8 @@ type CountryResponse struct {
 	Name  string  `json:"name"`
 }
 
+//Get formatted response
+
 func (a *MethodListResponseContainer) GetResponse() interface{} {
 	var methods []*Method
 	for _, sm := range a.ShippingMethods {
@@ -49,11 +54,31 @@ func (a *MethodListResponseContainer) GetResponse() interface{} {
 	return methods
 }
 
+//Get formatted response
 func (m *MethodResponseContainer) GetResponse() interface{} {
 	method := m.ShippingMethod.ToMethod()
 	return method
 }
 
+//Set the response
+func (m *MethodResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &m)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Set the response
+func (a *MethodListResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &a)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//Parse methods to a stricter format
 func (sm *MethodResponse) ToMethod() *Method {
 	maxWeightFloat, _ := strconv.ParseFloat(sm.MaxWeight, 64)
 	maxWeight := int64(maxWeightFloat * 1000)

@@ -1,5 +1,7 @@
 package sendcloud
 
+import "encoding/json"
+
 type SenderResponseContainer struct {
 	SenderAddresses []SenderResponse `json:"sender_addresses"`
 }
@@ -30,7 +32,7 @@ type SenderResponse struct {
 	Country     string `json:"country"`
 }
 
-//Translate the API response into an sliced set of Sender{} structs
+//Get formatted response
 func (a *SenderResponseContainer) GetResponse() interface{} {
 	var senders []*Sender
 	for _, sa := range a.SenderAddresses {
@@ -49,4 +51,13 @@ func (a *SenderResponseContainer) GetResponse() interface{} {
 	}
 
 	return senders
+}
+
+//Set the response
+func (a *SenderResponseContainer) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &a)
+	if err != nil {
+		return err
+	}
+	return nil
 }
