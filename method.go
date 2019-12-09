@@ -12,7 +12,12 @@ type Method struct {
 	Amount      int64
 	MinWeight   int64
 	MaxWeight   int64
-	Countries   []string
+	Countries   []Country
+}
+
+type Country struct {
+	Code   string
+	Amount int64
 }
 
 type MethodListResponseContainer struct {
@@ -94,7 +99,11 @@ func (sm *MethodResponse) ToMethod() *Method {
 		MaxWeight:   maxWeight,
 	}
 	for _, c := range sm.Countries {
-		method.Countries = append(method.Countries, c.Iso2)
+		country := Country{
+			Code:   c.Iso2,
+			Amount: int64(c.Price * 100),
+		}
+		method.Countries = append(method.Countries, country)
 	}
 
 	return method
