@@ -57,6 +57,22 @@ params := &sendcloud.ParcelParams{
 parcel, err := api.Parcel.New(params)
 ```
 
+resolve a service point id from postnl,dhl,dpd to a sendcloud service point id 
+```go
+spid, err := api.ServicePoint.GetServicePoint(servicepoint.Matcher{
+    SPID:        "NL-972301",
+    Carrier:     "dhl",
+    Country:     "NL",
+    PostalCode:  "9731AR",
+    HouseNumber: "41",
+    Latitude:    53.226994,
+    Longitude:   6.608120,
+})
+
+fmt.PrintLn(spid) 
+```
+this service point id can then be placed on an parcel on creation
+
 
 ## Contributing
 

@@ -21,6 +21,7 @@ type ParcelParams struct {
 	EmailAddress     string
 	PhoneNumber      string
 	ExternalID       string
+	ToServicePointID int64
 	Weight           int64
 	OrderNumber      string
 	SenderID         int64
@@ -42,6 +43,7 @@ type Parcel struct {
 	Method         int64       `json:"method"`
 	PhoneNumber    *string     `json:"phone_number"`
 	TrackingNumber string      `json:"tracking_number"`
+	ServicePointID *int64      `json:"to_service_point"`
 	Weight         int64       `json:"weight"`
 	Label          string      `json:"label"`
 	OrderNumber    string      `json:"order_number"`
@@ -57,20 +59,21 @@ type ParcelRequestContainer struct {
 }
 
 type ParcelRequest struct {
-	Name         string  `json:"name"`
-	CompanyName  string  `json:"company_name"`
-	Address      string  `json:"address"`
-	HouseNumber  string  `json:"house_number"`
-	City         string  `json:"city"`
-	PostalCode   string  `json:"postal_code"`
-	Telephone    string  `json:"telephone"`
-	RequestLabel bool    `json:"request_label"`
-	Email        string  `json:"email"`
-	Country      string  `json:"country"`
-	OrderNumber  string  `json:"order_number"`
-	ExternalID   *string `json:"external_reference,omitempty"`
-	SenderID     *int64  `json:"sender_address,omitempty"`
-	Shipment     struct {
+	Name             string  `json:"name"`
+	CompanyName      string  `json:"company_name"`
+	Address          string  `json:"address"`
+	HouseNumber      string  `json:"house_number"`
+	City             string  `json:"city"`
+	PostalCode       string  `json:"postal_code"`
+	Telephone        string  `json:"telephone"`
+	RequestLabel     bool    `json:"request_label"`
+	Email            string  `json:"email"`
+	ToServicePointID *int64  `json:"to_service_point,omitempty"`
+	Country          string  `json:"country"`
+	OrderNumber      string  `json:"order_number"`
+	ExternalID       *string `json:"external_reference,omitempty"`
+	SenderID         *int64  `json:"sender_address,omitempty"`
+	Shipment         struct {
 		ID int64 `json:"id"`
 	} `json:"shipment"`
 }
@@ -108,7 +111,7 @@ type ParcelResponse struct {
 	Reference           string          `json:"reference"`
 	Shipment            Shipment        `json:"shipment"`
 	Status              Status          `json:"status"`
-	ToServicePoint      *int64          `json:"to_service_point"`
+	ToServicePointID    *int64          `json:"to_service_point"`
 	Telephone           *string         `json:"telephone"`
 	TrackingNumber      string          `json:"tracking_number"`
 	Weight              string          `json:"weight"`
@@ -177,6 +180,10 @@ func (p *ParcelParams) GetPayload() interface{} {
 	if p.OrderNumber != "" {
 		parcel.OrderNumber = p.OrderNumber
 	}
+	if p.ToServicePointID != 0 {
+		parcel.ToServicePointID = &p.ToServicePointID
+	}
+
 	ar := ParcelRequestContainer{Parcel: parcel}
 	return ar
 }
@@ -199,6 +206,7 @@ func (p *ParcelResponseContainer) GetResponse() interface{} {
 		CountryCode:    p.Parcel.Country.Iso2,
 		PhoneNumber:    p.Parcel.Telephone,
 		TrackingNumber: p.Parcel.TrackingNumber,
+		ServicePointID: p.Parcel.ToServicePointID,
 		Label:          p.Parcel.Label.LabelPrinter,
 		OrderNumber:    p.Parcel.OrderNumber,
 		IsReturn:       p.Parcel.IsReturn,
