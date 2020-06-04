@@ -6,13 +6,14 @@ import (
 )
 
 type Method struct {
-	ID          int64
-	Name        string
-	CarrierCode string
-	Amount      int64
-	MinWeight   int64
-	MaxWeight   int64
-	Countries   []Country
+	ID             int64
+	Name           string
+	CarrierCode    string
+	IsServicePoint bool
+	Amount         int64
+	MinWeight      int64
+	MaxWeight      int64
+	Countries      []Country
 }
 
 type Country struct {
@@ -91,12 +92,13 @@ func (sm *MethodResponse) ToMethod() *Method {
 	minWeight := int64(minWeightFloat * 1000)
 
 	method := &Method{
-		ID:          sm.ID,
-		Name:        sm.Name,
-		CarrierCode: sm.Carrier,
-		Amount:      int64(sm.Price) * 100,
-		MinWeight:   minWeight,
-		MaxWeight:   maxWeight,
+		ID:             sm.ID,
+		Name:           sm.Name,
+		CarrierCode:    sm.Carrier,
+		Amount:         int64(sm.Price) * 100,
+		MinWeight:      minWeight,
+		MaxWeight:      maxWeight,
+		IsServicePoint: sm.ServicePointInput != "none",
 	}
 	for _, c := range sm.Countries {
 		country := Country{
