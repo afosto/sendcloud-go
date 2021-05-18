@@ -103,7 +103,7 @@ type ParcelResponse struct {
 	ID                  int64           `json:"id"`
 	Address             string          `json:"address"`
 	Address2            string          `json:"address_2"`
-	AddressDivided      AddressDevided  `json:"address_divided"`
+	AddressDivided      AddressDivided  `json:"address_divided"`
 	City                string          `json:"city"`
 	CompanyName         string          `json:"company_name"`
 	Country             CountryResponse `json:"country"`
@@ -141,7 +141,7 @@ type Carrier struct {
 	Code string `json:"code"`
 }
 
-type AddressDevided struct {
+type AddressDivided struct {
 	Street      string `json:"street"`
 	HouseNumber string `json:"house_number"`
 }
