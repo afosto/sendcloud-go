@@ -10,14 +10,16 @@ type LabelData []byte
 
 type ParcelParams struct {
 	Name             string
+	CompanyName      string
 	Street           string
 	HouseNumber      string
 	City             string
 	PostalCode       string
+	State            string
 	CountryCode      string
+	AdditionalInfo   string
 	IsLabelRequested bool
 	Method           int64
-	CompanyName      string
 	EmailAddress     string
 	PhoneNumber      string
 	ExternalID       string
@@ -62,14 +64,16 @@ type ParcelRequest struct {
 	Name             string  `json:"name"`
 	CompanyName      string  `json:"company_name"`
 	Address          string  `json:"address"`
+	Address2         string  `json:"address_2"`
 	HouseNumber      string  `json:"house_number"`
 	City             string  `json:"city"`
 	PostalCode       string  `json:"postal_code"`
-	Telephone        string  `json:"telephone"`
-	RequestLabel     bool    `json:"request_label"`
-	Email            string  `json:"email"`
-	ToServicePointID *int64  `json:"to_service_point,omitempty"`
+	CountryState     string  `json:"country_state"`
 	Country          string  `json:"country"`
+	Telephone        string  `json:"telephone"`
+	Email            string  `json:"email"`
+	RequestLabel     bool    `json:"request_label"`
+	ToServicePointID *int64  `json:"to_service_point,omitempty"`
 	OrderNumber      string  `json:"order_number"`
 	ExternalID       *string `json:"external_reference,omitempty"`
 	SenderID         *int64  `json:"sender_address,omitempty"`
@@ -158,13 +162,15 @@ func (p *ParcelParams) GetPayload() interface{} {
 		Name:         p.Name,
 		CompanyName:  p.CompanyName,
 		Address:      p.Street,
+		Address2:     p.AdditionalInfo,
 		HouseNumber:  p.HouseNumber,
 		City:         p.City,
 		PostalCode:   p.PostalCode,
-		Telephone:    p.PhoneNumber,
-		RequestLabel: p.IsLabelRequested,
-		Email:        p.EmailAddress,
+		CountryState: p.State,
 		Country:      p.CountryCode,
+		Telephone:    p.PhoneNumber,
+		Email:        p.EmailAddress,
+		RequestLabel: p.IsLabelRequested,
 		Shipment: struct {
 			ID int64 `json:"id"`
 		}{
