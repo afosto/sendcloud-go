@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"strconv"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type LabelData []byte
@@ -24,9 +26,28 @@ type ParcelParams struct {
 	PhoneNumber      string
 	ExternalID       string
 	ToServicePointID int64
-	Weight           int64
 	OrderNumber      string
 	SenderID         int64
+
+	// Weight contains the weight in Kilograms. Supports up to 3 decimals
+	// (grams). For example: decimal.New(20, -3) specifies 20 grams.
+	Weight decimal.Decimal
+
+	CustomsInvoiceNr        string
+	CustomsShipmentType     int64
+	ParcelItems             []ParcelParamsItem
+	TotalOrderValue         decimal.Decimal
+	TotalOrderValueCurrency string
+}
+
+type ParcelParamsItem struct {
+	Description   string
+	Quantity      uint64
+	Weight        decimal.Decimal
+	Value         decimal.Decimal
+	HsCode        string
+	OriginCountry string
+	SKU           string
 }
 
 type Parcel struct {
@@ -80,6 +101,22 @@ type ParcelRequest struct {
 	Shipment         struct {
 		ID int64 `json:"id"`
 	} `json:"shipment"`
+	Weight                  string              `json:"weight"`
+	CustomsInvoiceNr        string              `json:"customs_invoice_nr"`
+	CustomsShipmentType     int64               `json:"customs_shipment_type"`
+	ParcelItems             []ParcelRequestItem `json:"parcel_items"`
+	TotalOrderValue         string              `json:"total_order_value"`
+	TotalOrderValueCurrency string              `json:"total_order_value_currency"`
+}
+
+type ParcelRequestItem struct {
+	Description   string          `json:"description"`
+	Quantity      uint64          `json:"quantity"`
+	Weight        string          `json:"weight"`
+	Value         json.RawMessage `json:"value"` // decimal (as json-number, not as json-string), but we can't go through float64.
+	HsCode        string          `json:"hs_code"`
+	OriginCountry string          `json:"origin_country"`
+	SKU           string          `json:"sku"`
 }
 
 type LabelResponseContainer struct {
@@ -176,6 +213,13 @@ func (p *ParcelParams) GetPayload() interface{} {
 		}{
 			ID: p.Method,
 		},
+		CustomsInvoiceNr:        p.CustomsInvoiceNr,
+		CustomsShipmentType:     p.CustomsShipmentType,
+		TotalOrderValue:         p.TotalOrderValue.String(),
+		TotalOrderValueCurrency: p.TotalOrderValueCurrency,
+	}
+	if !p.Weight.Equals(decimal.Zero) {
+		parcel.Weight = p.Weight.String()
 	}
 	if p.SenderID != 0 {
 		parcel.SenderID = &p.SenderID
@@ -188,6 +232,19 @@ func (p *ParcelParams) GetPayload() interface{} {
 	}
 	if p.ToServicePointID != 0 {
 		parcel.ToServicePointID = &p.ToServicePointID
+	}
+
+	parcel.ParcelItems = make([]ParcelRequestItem, len(p.ParcelItems))
+	for i, item := range p.ParcelItems {
+		parcel.ParcelItems[i] = ParcelRequestItem{
+			Description:   item.Description,
+			Quantity:      item.Quantity,
+			Weight:        item.Weight.String(),
+			Value:         json.RawMessage(item.Value.String()),
+			HsCode:        item.HsCode,
+			OriginCountry: item.OriginCountry,
+			SKU:           item.SKU,
+		}
 	}
 
 	ar := ParcelRequestContainer{Parcel: parcel}
