@@ -6,8 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	sendcloud "github.com/afosto/sendcloud-go"
 	"strconv"
+
+	sendcloud "github.com/afosto/sendcloud-go"
 )
 
 type Client struct {
@@ -54,6 +55,19 @@ func (c *Client) GetLabel(labelURL string) ([]byte, error) {
 		return nil, err
 	}
 	return *data, nil
+}
+
+//Return the portal URL for a parcel
+func (c *Client) GetPortalURL(parcelID int64) (string, error) {
+	response := sendcloud.PortalURLResponse{}
+	err := sendcloud.Request("GET", "/api/v2/parcels/"+strconv.Itoa(int(parcelID))+"/return_portal_url", nil, c.apiKey, c.apiSecret, &response)
+	if err != nil {
+		return "", err
+	}
+	if response.URL == nil {
+		return "", errors.New("no URL provided by sendcloud")
+	}
+	return *response.URL, nil
 }
 
 //Validate and read the incoming webhook

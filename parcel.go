@@ -8,6 +8,10 @@ import (
 
 type LabelData []byte
 
+type PortalURLResponse struct {
+	URL *string `json:"url"`
+}
+
 type ParcelParams struct {
 	Name             string
 	CompanyName      string
@@ -248,5 +252,19 @@ func (l LabelData) GetResponse() interface{} {
 //Set the response
 func (l *LabelData) SetResponse(body []byte) error {
 	*l = body
+	return nil
+}
+
+//Get formatted response
+func (u PortalURLResponse) GetResponse() interface{} {
+	return u
+}
+
+//Set the response
+func (u *PortalURLResponse) SetResponse(body []byte) error {
+	err := json.Unmarshal(body, &u)
+	if err != nil {
+		return err
+	}
 	return nil
 }
