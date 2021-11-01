@@ -219,7 +219,7 @@ func (p *ParcelResponseContainer) GetResponse() interface{} {
 		Note:           p.Parcel.Note,
 		CarrierCode:    p.Parcel.Carrier.Code,
 		Data:           p.Parcel.Data,
-		Weight:		p.Parcel.Weight
+		Weight:		p.Parcel.Weight,
 	}
 
 	layout := "02-01-2006 15:04:05"
