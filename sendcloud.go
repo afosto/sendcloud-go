@@ -3,6 +3,7 @@ package sendcloud
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -33,7 +34,7 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	return e.Message
+	return fmt.Sprintf("request %s resulted in error code %d: %s", e.Request, e.Code, e.Message)
 }
 
 //Send a request to Sendcloud with given method, path, payload and credentials
