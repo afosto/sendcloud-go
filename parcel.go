@@ -118,7 +118,7 @@ type ParcelResponse struct {
 	ToServicePointID    *int64          `json:"to_service_point"`
 	Telephone           *string         `json:"telephone"`
 	TrackingNumber      string          `json:"tracking_number"`
-	Weight              *string         `json:"weight"`
+	Weight              string          `json:"weight"`
 	Label               LabelResponse   `json:"label"`
 	OrderNumber         string          `json:"order_number"`
 	InsuredValue        int64           `json:"insured_value"`
@@ -228,8 +228,8 @@ func (p *ParcelResponseContainer) GetResponse() interface{} {
 	createdAt, _ := time.Parse(layout, p.Parcel.DateCreated)
 	parcel.CreatedAt = createdAt
 
-	if p.Parcel.Weight != nil {
-		parcel.Weight = *p.Parcel.Weight
+	if p.Parcel.Weight != "" {
+		parcel.Weight = p.Parcel.Weight
 	}
 
 	return &parcel
