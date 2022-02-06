@@ -1,3 +1,4 @@
+[![build](https://github.com/afosto/sendcloud-go/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/afosto/sendcloud-go/actions/workflows/build-and-test.yml)
 # sendcloud-go
 
 An API-client for Sendcloud written in Golang.
