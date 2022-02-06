@@ -69,6 +69,7 @@ type ParcelRequest struct {
 	PostalCode       string  `json:"postal_code"`
 	CountryState     string  `json:"country_state"`
 	Country          string  `json:"country"`
+	Weight           *string `json:"weight,omitempty"`
 	Telephone        string  `json:"telephone"`
 	Email            string  `json:"email"`
 	RequestLabel     bool    `json:"request_label"`
@@ -117,7 +118,7 @@ type ParcelResponse struct {
 	ToServicePointID    *int64          `json:"to_service_point"`
 	Telephone           *string         `json:"telephone"`
 	TrackingNumber      string          `json:"tracking_number"`
-	Weight              string          `json:"weight"`
+	Weight              *string         `json:"weight"`
 	Label               LabelResponse   `json:"label"`
 	OrderNumber         string          `json:"order_number"`
 	InsuredValue        int64           `json:"insured_value"`
@@ -188,6 +189,9 @@ func (p *ParcelParams) GetPayload() interface{} {
 	if p.ToServicePointID != 0 {
 		parcel.ToServicePointID = &p.ToServicePointID
 	}
+	if p.Weight != "" {
+		parcel.Weight = &p.Weight
+	}
 
 	ar := ParcelRequestContainer{Parcel: parcel}
 	return ar
@@ -218,12 +222,15 @@ func (p *ParcelResponseContainer) GetResponse() interface{} {
 		Note:           p.Parcel.Note,
 		CarrierCode:    p.Parcel.Carrier.Code,
 		Data:           p.Parcel.Data,
-		Weight:         p.Parcel.Weight,
 	}
 
 	layout := "02-01-2006 15:04:05"
 	createdAt, _ := time.Parse(layout, p.Parcel.DateCreated)
 	parcel.CreatedAt = createdAt
+
+	if p.Parcel.Weight != nil {
+		parcel.Weight = *p.Parcel.Weight
+	}
 
 	return &parcel
 }
