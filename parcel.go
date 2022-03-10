@@ -69,6 +69,7 @@ type ParcelRequest struct {
 	PostalCode       string  `json:"postal_code"`
 	CountryState     string  `json:"country_state"`
 	Country          string  `json:"country"`
+	Weight           string  `json:"weight,omitempty"`
 	Telephone        string  `json:"telephone"`
 	Email            string  `json:"email"`
 	RequestLabel     bool    `json:"request_label"`
@@ -187,6 +188,9 @@ func (p *ParcelParams) GetPayload() interface{} {
 	}
 	if p.ToServicePointID != 0 {
 		parcel.ToServicePointID = &p.ToServicePointID
+	}
+	if p.Weight != "" {
+		parcel.Weight = p.Weight
 	}
 
 	ar := ParcelRequestContainer{Parcel: parcel}
