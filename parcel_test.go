@@ -27,13 +27,14 @@ func TestGetPayload(t *testing.T) {
 	for _, test := range tests {
 		payload := test.Params.GetPayload()
 		b, _ := json.Marshal(payload)
-		var obj sendcloud.ParcelRequestContainer
+		var obj map[string]map[string]interface{}
 
 		err := json.Unmarshal(b, &obj)
 		assert.NoError(t, err)
 
-		if test.Params.Weight != "" {
-			assert.Equal(t, test.Params.Weight, obj.Parcel.Weight, test.Name)
+		if test.Params.Weight == "" {
+			_, ok := obj["parcel"]["weight"]
+			assert.False(t, ok)
 		}
 	}
 }
