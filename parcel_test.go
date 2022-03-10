@@ -28,11 +28,12 @@ func TestGetPayload(t *testing.T) {
 		payload := test.Params.GetPayload()
 		b, _ := json.Marshal(payload)
 		var obj sendcloud.ParcelRequestContainer
-		json.Unmarshal(b, &obj)
+
+		err := json.Unmarshal(b, &obj)
+		assert.NoError(t, err)
+
 		if test.Params.Weight != "" {
-			assert.Equal(t, test.Params.Weight, *obj.Parcel.Weight, test.Name)
-		} else {
-			assert.Nil(t, obj.Parcel.Weight, test.Name)
+			assert.Equal(t, test.Params.Weight, obj.Parcel.Weight, test.Name)
 		}
 	}
 }

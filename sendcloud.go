@@ -105,8 +105,3 @@ func getUrl(uri string) string {
 
 	return url
 }
-
-// Converts string to string pointer
-func String(s string) *string {
-	return &s
-}
