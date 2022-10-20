@@ -1,0 +1,25 @@
+# github.com/afosto/sendcloud-go v0.2.1
+## explicit; go 1.15
+github.com/afosto/sendcloud-go
+github.com/afosto/sendcloud-go/integration
+github.com/afosto/sendcloud-go/method
+github.com/afosto/sendcloud-go/parcel
+github.com/afosto/sendcloud-go/sender
+github.com/afosto/sendcloud-go/servicepoint
+# github.com/davecgh/go-spew v1.1.0
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/stretchr/testify v1.7.0
+## explicit; go 1.13
+github.com/stretchr/testify/assert
+# golang.org/x/text v0.3.5
+## explicit; go 1.11
+golang.org/x/text/runes
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+## explicit
+gopkg.in/yaml.v3
