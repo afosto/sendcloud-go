@@ -3,7 +3,7 @@ package servicepoint
 import (
 	"errors"
 	"fmt"
-	"github.com/afosto/sendcloud-go"
+	"github.com/itsrever/sendcloud-go"
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"

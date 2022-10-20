@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/afosto/sendcloud-go"
+	"github.com/itsrever/sendcloud-go"
 	"strconv"
 )
 
@@ -17,7 +17,7 @@ func New(apiKey string, apiSecret string) *Client {
 	}
 }
 
-//List all integrations the the account
+// List all integrations the the account
 func (c *Client) GetIntegrations() ([]*sendcloud.Integration, error) {
 	ilrc := sendcloud.IntegrationListResponseContainer{}
 	err := sendcloud.Request("GET", "/api/v2/integrations", nil, c.apiKey, c.apiSecret, &ilrc)
@@ -28,7 +28,7 @@ func (c *Client) GetIntegrations() ([]*sendcloud.Integration, error) {
 
 }
 
-//Update an existing integration
+// Update an existing integration
 func (c *Client) UpdateIntegration(params *sendcloud.IntegrationParams) (*sendcloud.Integration, error) {
 	ilrc := sendcloud.IntegrationResponseContainer{}
 	err := sendcloud.Request("PUT", "/api/v2/integrations/"+strconv.Itoa(int(params.ID)), params, c.apiKey, c.apiSecret, &ilrc)

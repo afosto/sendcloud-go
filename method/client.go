@@ -1,7 +1,7 @@
 package method
 
 import (
-	"github.com/afosto/sendcloud-go"
+	"github.com/itsrever/sendcloud-go"
 	"strconv"
 )
 
@@ -17,7 +17,7 @@ func New(apiKey string, apiSecret string) *Client {
 	}
 }
 
-//Get all shipment methods
+// Get all shipment methods
 func (c *Client) GetMethods() ([]*sendcloud.Method, error) {
 	smr := sendcloud.MethodListResponseContainer{}
 	err := sendcloud.Request("GET", "/api/v2/shipping_methods", nil, c.apiKey, c.apiSecret, &smr)
@@ -27,7 +27,7 @@ func (c *Client) GetMethods() ([]*sendcloud.Method, error) {
 	return smr.GetResponse().([]*sendcloud.Method), nil
 }
 
-//Get a single method
+// Get a single method
 func (c *Client) GetMethod(id int64) (*sendcloud.Method, error) {
 	mr := sendcloud.MethodResponseContainer{}
 	err := sendcloud.Request("GET", "/api/v2/shipping_methods/"+strconv.Itoa(int(id)), nil, c.apiKey, c.apiSecret, &mr)

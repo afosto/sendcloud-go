@@ -1,7 +1,7 @@
 package sender
 
 import (
-	"github.com/afosto/sendcloud-go"
+	"github.com/itsrever/sendcloud-go"
 )
 
 type Client struct {
@@ -16,7 +16,7 @@ func New(apiKey string, apiSecret string) *Client {
 	}
 }
 
-//Get all sender addresses
+// Get all sender addresses
 func (c *Client) GetAddresses() ([]*sendcloud.Sender, error) {
 	address := sendcloud.SenderResponseContainer{}
 	err := sendcloud.Request("GET", "/api/v2/user/addresses/sender", nil, c.apiKey, c.apiSecret, &address)
