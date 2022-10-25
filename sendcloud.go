@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-xray-sdk-go/xray"
+
 )
 
 type Payload interface {
@@ -39,9 +42,9 @@ func (e *Error) Error() string {
 
 //Send a request to Sendcloud with given method, path, payload and credentials
 func Request(method string, uri string, payload Payload, apiKey string, apiSecret string, r Response) error {
-	client := http.Client{
+	client := xray.Client(&http.Client{
 		Timeout: 10 * time.Second,
-	}
+		})
 	var request *http.Request
 	var err error
 
