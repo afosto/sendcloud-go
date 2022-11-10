@@ -37,7 +37,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("request %s resulted in error code %d: %s", e.Request, e.Code, e.Message)
 }
 
-//Send a request to Sendcloud with given method, path, payload and credentials
+// Send a request to Sendcloud with given method, path, payload and credentials
 func Request(method string, uri string, payload Payload, apiKey string, apiSecret string, r Response) error {
 	client := http.Client{
 		Timeout: 10 * time.Second,
@@ -94,13 +94,13 @@ func Request(method string, uri string, payload Payload, apiKey string, apiSecre
 	return err
 }
 
-//Return the full URL
+// Return the full URL
 func getUrl(uri string) string {
 	var url string
 	if strings.HasPrefix(uri, "https://") {
 		url = uri
 	} else {
-		url = "https://panel.sendcloud.sc/" + uri
+		url = "https://panel.sendcloud.sc" + uri
 	}
 
 	return url
