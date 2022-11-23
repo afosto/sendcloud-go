@@ -41,11 +41,12 @@ type MethodResponse struct {
 }
 
 type CountryResponse struct {
-	Iso2  string  `json:"iso_2"`
-	Iso3  string  `json:"iso_3"`
-	ID    int     `json:"id"`
-	Price float64 `json:"price"`
-	Name  string  `json:"name"`
+	Iso2          string   `json:"iso_2"`
+	Iso3          string   `json:"iso_3"`
+	ID            int      `json:"id"`
+	Price         float64  `json:"price"`
+	Name          string   `json:"name"`
+	LeadTimeHours *float64 `json:"lead_time_hours"`
 }
 
 //Get formatted response
