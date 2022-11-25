@@ -7,6 +7,16 @@ import (
 
 type LabelData []byte
 
+type CustomsShipmentType int
+
+const (
+	CustomsShipmentTypeGift = iota
+	CustomsShipmentTypeDocuments
+	CustomsShipmentTypeCommercialGoods
+	CustomsShipmentTypeCommercialSample
+	CustomsShipmentTypeReturnedGoods
+)
+
 type ParcelParams struct {
 	Name             string
 	CompanyName      string
@@ -29,11 +39,21 @@ type ParcelParams struct {
 
 	Items *[]CreateParcelItemRequest
 
-	TotalOrderValueCurrency    *string
-	TotalOrderValue            *string
+	// The currency of the total order value. Validated against a format of
+	// “XYZ” (ISO 4217).
+	TotalOrderValueCurrency *string
+	// The value paid by the buyer (via various payment methods supported by the
+	// shop(cash on delivery, pre-paid or post-paid), it will also be used for
+	// the cash on delivery amount for example “99.99”.
+	TotalOrderValue *string
+	// Shipping method name selected by buyer during the checkout
 	ShippingMethodCheckoutName *string
-	CustomsShipmentType        *string
-	ApplyShippingRules         *bool
+	// Customs invoice number
+	CustomsInvoiceNr *string
+	// Customs shipment type
+	CustomsShipmentType *CustomsShipmentType
+	// When set to true configured shipping rules will be applied before creating the label and announcing the Parcel
+	ApplyShippingRules *bool
 }
 
 type CreateParcelItemRequest struct {
@@ -114,11 +134,12 @@ type ParcelRequest struct {
 
 	Items *[]CreateParcelItemRequest `json:"parcel_items,omitempty"`
 
-	TotalOrderValueCurrency    *string `json:"total_order_value_currency,omitempty"`
-	TotalOrderValue            *string `json:"total_order_value,omitempty"`
-	ShippingMethodCheckoutName *string `json:"shipping_method_checkout_name,omitempty"`
-	CustomsShipmentType        *string `json:"customs_shipment_type,omitempty"`
-	ApplyShippingRules         *bool   `json:"apply_shipping_rules,omitempty"`
+	TotalOrderValueCurrency    *string              `json:"total_order_value_currency,omitempty"`
+	TotalOrderValue            *string              `json:"total_order_value,omitempty"`
+	ShippingMethodCheckoutName *string              `json:"shipping_method_checkout_name,omitempty"`
+	CustomsInvoiceNr           *string              `json:"customs_invoice_nr,omitempty"`
+	CustomsShipmentType        *CustomsShipmentType `json:"customs_shipment_type,omitempty"`
+	ApplyShippingRules         *bool                `json:"apply_shipping_rules,omitempty"`
 }
 
 type LabelResponseContainer struct {
@@ -214,6 +235,7 @@ func (p *ParcelParams) GetPayload() interface{} {
 		TotalOrderValueCurrency:    p.TotalOrderValueCurrency,
 		TotalOrderValue:            p.TotalOrderValue,
 		ShippingMethodCheckoutName: p.ShippingMethodCheckoutName,
+		CustomsInvoiceNr:           p.CustomsInvoiceNr,
 		CustomsShipmentType:        p.CustomsShipmentType,
 		ApplyShippingRules:         p.ApplyShippingRules,
 	}
