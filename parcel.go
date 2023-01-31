@@ -10,7 +10,7 @@ type LabelData []byte
 type CustomsShipmentType int
 
 const (
-	CustomsShipmentTypeGift = iota
+	CustomsShipmentTypeGift CustomsShipmentType = iota
 	CustomsShipmentTypeDocuments
 	CustomsShipmentTypeCommercialGoods
 	CustomsShipmentTypeCommercialSample
