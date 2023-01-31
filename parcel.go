@@ -36,9 +36,7 @@ type ParcelParams struct {
 	Weight           string
 	OrderNumber      string
 	SenderID         int64
-
-	Items *[]CreateParcelItemRequest
-
+	Items            []CreateParcelItemRequest
 	// The currency of the total order value. Validated against a format of
 	// “XYZ” (ISO 4217).
 	TotalOrderValueCurrency *string
@@ -113,33 +111,31 @@ type ParcelRequestContainer struct {
 }
 
 type ParcelRequest struct {
-	Name             string                       `json:"name"`
-	CompanyName      string                       `json:"company_name"`
-	Address          string                       `json:"address"`
-	Address2         string                       `json:"address_2"`
-	HouseNumber      string                       `json:"house_number"`
-	City             string                       `json:"city"`
-	PostalCode       string                       `json:"postal_code"`
-	CountryState     string                       `json:"country_state"`
-	Country          string                       `json:"country"`
-	Weight           string                       `json:"weight,omitempty"`
-	Telephone        string                       `json:"telephone"`
-	Email            string                       `json:"email"`
-	RequestLabel     bool                         `json:"request_label"`
-	ToServicePointID *int64                       `json:"to_service_point,omitempty"`
-	OrderNumber      string                       `json:"order_number"`
-	ExternalID       *string                      `json:"external_reference,omitempty"`
-	SenderID         *int64                       `json:"sender_address,omitempty"`
-	Shipment         *CreateParcelShipmentRequest `json:"shipment,omitempty"`
-
-	Items *[]CreateParcelItemRequest `json:"parcel_items,omitempty"`
-
-	TotalOrderValueCurrency    *string              `json:"total_order_value_currency,omitempty"`
-	TotalOrderValue            *string              `json:"total_order_value,omitempty"`
-	ShippingMethodCheckoutName *string              `json:"shipping_method_checkout_name,omitempty"`
-	CustomsInvoiceNr           *string              `json:"customs_invoice_nr,omitempty"`
-	CustomsShipmentType        *CustomsShipmentType `json:"customs_shipment_type,omitempty"`
-	ApplyShippingRules         *bool                `json:"apply_shipping_rules,omitempty"`
+	Name                       string                       `json:"name"`
+	CompanyName                string                       `json:"company_name"`
+	Address                    string                       `json:"address"`
+	Address2                   string                       `json:"address_2"`
+	HouseNumber                string                       `json:"house_number"`
+	City                       string                       `json:"city"`
+	PostalCode                 string                       `json:"postal_code"`
+	CountryState               string                       `json:"country_state"`
+	Country                    string                       `json:"country"`
+	Weight                     string                       `json:"weight,omitempty"`
+	Telephone                  string                       `json:"telephone"`
+	Email                      string                       `json:"email"`
+	RequestLabel               bool                         `json:"request_label"`
+	ToServicePointID           *int64                       `json:"to_service_point,omitempty"`
+	OrderNumber                string                       `json:"order_number"`
+	ExternalID                 *string                      `json:"external_reference,omitempty"`
+	SenderID                   *int64                       `json:"sender_address,omitempty"`
+	Shipment                   *CreateParcelShipmentRequest `json:"shipment,omitempty"`
+	Items                      []CreateParcelItemRequest    `json:"parcel_items,omitempty"`
+	TotalOrderValueCurrency    *string                      `json:"total_order_value_currency,omitempty"`
+	TotalOrderValue            *string                      `json:"total_order_value,omitempty"`
+	ShippingMethodCheckoutName *string                      `json:"shipping_method_checkout_name,omitempty"`
+	CustomsInvoiceNr           *string                      `json:"customs_invoice_nr,omitempty"`
+	CustomsShipmentType        *CustomsShipmentType         `json:"customs_shipment_type,omitempty"`
+	ApplyShippingRules         *bool                        `json:"apply_shipping_rules,omitempty"`
 }
 
 type LabelResponseContainer struct {
