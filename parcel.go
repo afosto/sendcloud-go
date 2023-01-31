@@ -58,9 +58,9 @@ type ParcelParams struct {
 
 type CreateParcelItemRequest struct {
 	// Harmonized System Code Wikipedia Link. Providing a complete HS code with 8 characters increases the delivery rate.
-	HsCode int `json:"hs_code"`
+	HsCode string `json:"hs_code"`
 	// Weight of a single item in kilograms.
-	Weight float64 `json:"weight"`
+	Weight string `json:"weight"`
 	// Quantity of items shipped.
 	Quantity int `json:"quantity"`
 	// Description of the item.
