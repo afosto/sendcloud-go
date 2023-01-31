@@ -78,7 +78,14 @@ func Request(method string, uri string, payload Payload, apiKey string, apiSecre
 	}
 
 	if response.StatusCode > 299 || response.StatusCode < 200 {
-		//Return error response
+		if !strings.Contains(response.Header.Get("content-type"), "application/json") {
+			return &Error{
+				Code:    response.StatusCode,
+				Message: string(body),
+			}
+		}
+
+		// Return error response
 		errResponse := ErrorResponse{}
 		err = json.Unmarshal(body, &errResponse)
 		if err != nil {
