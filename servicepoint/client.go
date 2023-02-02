@@ -64,10 +64,13 @@ func (service Client) GetServicePoint(servicePoint Matcher) (int, error) {
 
 	matching := unaccent(fmt.Sprintf("%s %s", servicePoint.PostalCode, servicePoint.HouseNumber))
 
-	for _, servicePoint := range servicePoints {
+	for _, sp := range servicePoints {
 
-		if unaccent(servicePoint.Identifier()) == matching {
-			return servicePoint.ID, nil
+		if unaccent(sp.Identifier()) == matching {
+			return sp.ID, nil
+		}
+		if sp.Code == servicePoint.SPID {
+			return sp.ID, nil
 		}
 	}
 
