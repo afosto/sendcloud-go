@@ -2,6 +2,7 @@ package sendcloud
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -37,27 +38,25 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("request %s resulted in error code %d: %s", e.Request, e.Code, e.Message)
 }
 
-// Send a request to Sendcloud with given method, path, payload and credentials
-func Request(method string, uri string, payload Payload, apiKey string, apiSecret string, r Response) error {
-	client := http.Client{
-		Timeout: 30 * time.Second,
-	}
+// NewRequest creates and prepares a *http.Request with the given method, url,
+// payload and credentials, so it's ready to be sent to Sendcloud.
+func NewRequest(ctx context.Context, method, uri string, payload Payload, apiKey, apiSecret string) (*http.Request, error) {
 	var request *http.Request
 	var err error
 
 	if payload == nil {
-		request, err = http.NewRequest(method, getUrl(uri), nil)
+		request, err = http.NewRequestWithContext(ctx, method, getUrl(uri), nil)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	} else {
 		body, err := json.Marshal(payload.GetPayload())
 		if err != nil {
-			return err
+			return nil, err
 		}
-		request, err = http.NewRequest(method, getUrl(uri), bytes.NewBuffer(body))
+		request, err = http.NewRequestWithContext(ctx, method, getUrl(uri), bytes.NewBuffer(body))
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -66,39 +65,70 @@ func Request(method string, uri string, payload Payload, apiKey string, apiSecre
 	}
 	request.Header.Set("User-Agent", "Sendcloud-Go/0.1 ("+apiKey+")")
 	request.SetBasicAuth(apiKey, apiSecret)
+	return request, nil
+}
 
+// Request sends a request to Sendcloud with given method, path, payload and credentials.
+func Request(method, uri string, payload Payload, apiKey, apiSecret string, r Response) error {
+	request, err := NewRequest(context.Background(), method, uri, payload, apiKey, apiSecret)
+	if err != nil {
+		return err
+	}
+
+	client := http.Client{Timeout: 30 * time.Second}
 	response, err := client.Do(request)
 	if err != nil {
 		return err
 	}
 	defer response.Body.Close()
+
+	if err = ValidateResponse(response); err != nil {
+		return err
+	}
+
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	if response.StatusCode > 299 || response.StatusCode < 200 {
-		if !strings.Contains(response.Header.Get("content-type"), "application/json") {
-			return &Error{
-				Code:    response.StatusCode,
-				Message: string(body),
-			}
-		}
+	return r.SetResponse(body)
+}
 
-		// Return error response
-		errResponse := ErrorResponse{}
-		err = json.Unmarshal(body, &errResponse)
-		if err != nil {
-			return err
-		}
+// ValidateResponse validates a received response from Sendcloud. It is valid
+// and returns nil when the status code is between 200 and 299.
+func ValidateResponse(response *http.Response) error {
+	if response.StatusCode >= 200 && response.StatusCode <= 299 {
+		return nil
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	if !strings.Contains(response.Header.Get("content-type"), "application/json") {
 		return &Error{
 			Code:    response.StatusCode,
-			Request: errResponse.Error.Request,
-			Message: errResponse.Error.Message,
+			Request: requestFromResponse(response),
+			Message: string(body),
 		}
 	}
-	err = r.SetResponse(body)
-	return err
+
+	var errResponse ErrorResponse
+	if err = json.Unmarshal(body, &errResponse); err != nil {
+		return err
+	}
+	if errResponse.Error.Request == "" {
+		errResponse.Error.Request = requestFromResponse(response)
+	}
+	if errResponse.Error.Message == "" {
+		errResponse.Error.Message = string(body)
+	}
+
+	return &Error{
+		Code:    response.StatusCode,
+		Request: errResponse.Error.Request,
+		Message: errResponse.Error.Message,
+	}
 }
 
 // Return the full URL
@@ -111,4 +141,11 @@ func getUrl(uri string) string {
 	}
 
 	return url
+}
+
+func requestFromResponse(resp *http.Response) string {
+	if resp.Request != nil && resp.Request.URL != nil {
+		return resp.Request.URL.String()
+	}
+	return ""
 }
