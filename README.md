@@ -7,6 +7,7 @@ An API-client for Sendcloud written in Golang.
 
 This package currently supports:
 - parcels
+- parcel documents
 - labels
 - methods
 - addresses
