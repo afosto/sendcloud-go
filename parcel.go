@@ -98,6 +98,7 @@ type Parcel struct {
 	TrackingUrl    string      `json:"tracking_url"`
 	ServicePointID *int64      `json:"to_service_point"`
 	Weight         string      `json:"weight"`
+	Status         Status      `json:"status"`
 	Label          string      `json:"label"`
 	OrderNumber    string      `json:"order_number"`
 	IsReturn       bool        `json:"is_return"`
@@ -261,7 +262,7 @@ func (p *ParcelParams) GetPayload() interface{} {
 	return ar
 }
 
-// Handle the response and return it as a Parcel{}
+// Handle the response and returns it as a Parcel{}
 func (p *ParcelResponseContainer) GetResponse() interface{} {
 	parcel := Parcel{
 		ID:             p.Parcel.ID,
@@ -274,6 +275,7 @@ func (p *ParcelResponseContainer) GetResponse() interface{} {
 		Address:        p.Parcel.Address,
 		Address2:       p.Parcel.Address2,
 		City:           p.Parcel.City,
+		Status:         p.Parcel.Status,
 		Method:         p.Parcel.Shipment.ID,
 		PostalCode:     p.Parcel.PostalCode,
 		CountryCode:    p.Parcel.Country.Iso2,
