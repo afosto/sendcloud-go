@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/afosto/sendcloud-go"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,7 +21,7 @@ func TestGetPayload(t *testing.T) {
 		{
 			Name: "Should include weight in request",
 			Params: sendcloud.ParcelParams{
-				Weight: "0.040",
+				Weight: decimal.RequireFromString("0.040"),
 			},
 		},
 	}
@@ -32,7 +33,7 @@ func TestGetPayload(t *testing.T) {
 		err := json.Unmarshal(b, &obj)
 		assert.NoError(t, err)
 
-		if test.Params.Weight == "" {
+		if test.Params.Weight.IsZero() {
 			_, ok := obj["parcel"]["weight"]
 			assert.False(t, ok)
 		}
